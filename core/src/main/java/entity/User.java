@@ -6,14 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import utils.StringUtility;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private String id = UUID.randomUUID().toString();
+    private String id;
     private String name;
 
     public User(String pName) {

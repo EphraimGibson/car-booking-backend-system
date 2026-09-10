@@ -4,12 +4,18 @@ import entity.Booking;
 import entity.User;
 import repository.IBookingRepository;
 
-import java.util.List;
+import java.util.*;
 
 public class BookingRepositoryMem implements IBookingRepository {
+
+    Map<String, Booking> bookings = new HashMap<>();
     @Override
     public Booking createBooking(Booking booking) {
-        return null;
+        String id = UUID.randomUUID().toString();
+        booking.setId(id);
+        bookings.put(id, booking);
+
+        return booking;
     }
 
     @Override

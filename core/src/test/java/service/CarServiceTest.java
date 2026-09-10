@@ -57,27 +57,6 @@ class CarServiceTest {
     }
 
     @Test
-    void testNewCarShouldHaveAnID() {
-        // Given
-        CreateCarDto testCar = CreateCarDto.builder()
-                .model("C300")
-                .regNumber("A15DFT")
-                .pricePerDay(new BigDecimal(55))
-                .brand(Brand.MERCEDES)
-                .isElectric(true)
-                .build();
-
-        when(carRepository.saveCar(any(Car.class))).thenReturn(new Car("C300",
-                "A15DFT", new BigDecimal(55), Brand.MERCEDES, true));
-
-        // When
-        Car result = carService.createCar(testCar);
-
-        // Then
-        Assertions.assertNotNull(result.getId());
-    }
-
-    @Test
     void testNewCarShouldBeAvailable() {
         // Given
         CreateCarDto testCar = new CreateCarDto("C300", "A15DFT", new BigDecimal(55), Brand.MERCEDES, true);

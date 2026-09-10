@@ -3,16 +3,19 @@ package memory;
 import entity.Car;
 import repository.ICarRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CarRepositoryMem implements ICarRepository {
 
-    List<Car> allCars = new ArrayList<>();
+    Map<String, Car> allCars = new HashMap<>();
 
     @Override
     public Car saveCar(Car car) {
-
+        String id = UUID.randomUUID().toString();
+        car.setId(id);
+        allCars.put(id, car);
+        
+        return car;
     }
 
     @Override

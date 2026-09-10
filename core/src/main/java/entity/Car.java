@@ -6,13 +6,12 @@ import lombok.Setter;
 import utils.StringUtility;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class Car {
-    private String id = UUID.randomUUID().toString();
+    private String id;
     private String model;
     private String registrationNumber;
     private BigDecimal pricePerDay;

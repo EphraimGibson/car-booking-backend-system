@@ -3,34 +3,31 @@ package memory;
 import entity.User;
 import repository.IUserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UserRepositoryMem implements IUserRepository {
 
-    private final List<User> allUsers = new ArrayList<>();
+    private final Map<String, User> allUsers = new HashMap<>();
 
     @Override
     public User saveUser(User user) {
-        allUsers.add(user);
+        String id = UUID.randomUUID().toString();
+        user.setId(id);
+        allUsers.put(id, user);
+
         return user;
     }
 
     @Override
     public List<User> getAllUsers() {
-        return allUsers;
+        return List.of();
     }
 
     @Override
     public User getUserById(String id) {
-
-        for (User user : allUsers) {
-            if (id.equals(user.getId())) {
-                return user;
-            }
-        }
+        return allUsers.get(id);
         //TODO rules say not to return null, maybe throw exception
 
-        return null;
+
     }
 }

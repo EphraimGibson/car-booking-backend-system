@@ -6,14 +6,13 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class Booking {
 
-    private String id = UUID.randomUUID().toString();
+    private String id;
     private User user;
     private Car car;
     private LocalDate startDate;
