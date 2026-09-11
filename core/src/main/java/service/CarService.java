@@ -1,6 +1,5 @@
 package service;
 
-import dtos.CreateCarDto;
 import entity.Car;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,14 +16,7 @@ import java.util.List;
 public class CarService {
     private ICarRepository carRepository;
 
-    public Car createCar(CreateCarDto createCarDto) {
-        Car car = new Car();
-        car.setModel(createCarDto.getModel());
-        car.setRegistrationNumber(createCarDto.getRegNumber());
-        car.setPricePerDay(createCarDto.getPricePerDay());
-        car.setBrand(createCarDto.getBrand());
-        car.setElectric(createCarDto.isElectric());
-
+    public Car createCar(Car car) {
         return carRepository.saveCar(car);
     }
 
@@ -41,6 +33,6 @@ public class CarService {
     }
 
     public Car getCarById(String id) {
-        return carRepository.getCarById(id);
+        return carRepository.findById(id);
     }
 }

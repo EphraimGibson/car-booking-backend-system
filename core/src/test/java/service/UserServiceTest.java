@@ -30,19 +30,11 @@ class UserServiceTest {
         when(userRepositoryMock.saveUser(any())).thenReturn(testUser);
 
         //When
-        User result = userService.createUser(testUser.getName());
+        User result = userService.createUser(testUser);
 
         //Then
-        Assertions.assertEquals(testUser.getName(), result.getName(), "name of  new user does not match");
+        Assertions.assertEquals(testUser, result, " returned user does not match");
         verify(userRepositoryMock, times(1)).saveUser(any());
-    }
-
-    @Test
-    void testShouldThrowErrorWhenCreateUserWithInvalidName() {
-        //When and Then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userService.createUser(""), "invalid name cannot be created");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userService.createUser(null), "invalid name cannot be created");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userService.createUser("    "), "invalid name cannot be created");
     }
 
     @Test
@@ -76,13 +68,13 @@ class UserServiceTest {
         User testUser = new User(id, "John");
 
 
-        when(userRepositoryMock.getUserById(id)).thenReturn(testUser);
+        when(userRepositoryMock.findById(id)).thenReturn(testUser);
 
         //When
         User result = userService.getUserById(id);
 
         //Then
         Assertions.assertEquals(id, result.getId(), String.format("user with id: %s is not found", id));
-        verify(userRepositoryMock, times(1)).getUserById(any());
+        verify(userRepositoryMock, times(1)).findById(any());
     }
 }

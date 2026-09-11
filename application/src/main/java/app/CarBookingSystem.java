@@ -1,11 +1,26 @@
 package app;
 
-import service.BookingService;
+import entity.Car;
+import entity.User;
+
+import java.util.List;
 
 public class CarBookingSystem {
-    private BookingService bookingService;
+
 
     public static void main(String[] args) {
-        System.out.println("Car Booking System started.");
+        ApplicationContext app = ApplicationContext.getContext();
+
+        List<User> allUsers = app.getUserService().getAllUsers();
+
+        allUsers.forEach(System.out::println);
+        System.out.println(allUsers.size());
+
+        List<Car> allCars = app.getCarService().getAllCars();
+
+        allCars.forEach(System.out::println);
+        System.out.println(allCars.size());
+
+
     }
 }

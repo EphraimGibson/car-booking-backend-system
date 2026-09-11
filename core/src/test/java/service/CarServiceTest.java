@@ -1,6 +1,5 @@
 package service;
 
-import dtos.CreateCarDto;
 import entity.Brand;
 import entity.Car;
 import org.junit.jupiter.api.Assertions;
@@ -30,94 +29,19 @@ class CarServiceTest {
     @Test
     void testShouldCreateCarSuccessfully() {
         // Given
+        Car testCar = new Car("C300", "A15DFT", new BigDecimal("55.32"), Brand.MERCEDES, true);
 
-        CreateCarDto testCar = CreateCarDto.builder()
-                .model("C300")
-                .regNumber("A15DFT")
-                .pricePerDay(new BigDecimal("55.32"))
-                .brand(Brand.MERCEDES)
-                .isElectric(true)
-                .build();
+        when(carRepository.saveCar(any(Car.class))).thenReturn(testCar);
 
-        when(carRepository.saveCar(any(Car.class))).thenReturn(new Car("C300",
-                "A15DFT", new BigDecimal("55.32"), Brand.MERCEDES, true));
         // When
         Car result = carService.createCar(testCar);
 
         // Then
         Assertions.assertNotNull(result);
 
-        assertEquals(testCar.getBrand(), result.getBrand(), "Brand does not match");
-        assertEquals(testCar.getPricePerDay(), result.getPricePerDay(), "Price per day does not match");
-        assertEquals(testCar.getRegNumber(), result.getRegistrationNumber(), "Registration number does not match");
-        assertEquals(testCar.isElectric(), result.isElectric(), "Electric status does not match");
-        assertEquals(testCar.getModel(), result.getModel(), "Model does not match");
+        assertEquals(testCar, result);
 
         verify(carRepository, times(1)).saveCar(any(Car.class));
-    }
-
-    @Test
-    void testNewCarShouldBeAvailable() {
-        // Given
-        CreateCarDto testCar = new CreateCarDto("C300", "A15DFT", new BigDecimal(55), Brand.MERCEDES, true);
-
-        when(carRepository.saveCar(any(Car.class))).thenReturn(new Car("C300",
-                "A15DFT", new BigDecimal(55), Brand.MERCEDES, true));
-
-        // When
-        Car result = carService.createCar(testCar);
-
-        // Then
-        Assertions.assertTrue(result.isAvailable());
-    }
-
-    @Test
-    void testShouldThrowErrorWhenCarInputIsInvalid() {
-        // Given
-        CreateCarDto testCar = CreateCarDto.builder()
-                .model("C300")
-                .regNumber(null)
-                .pricePerDay(new BigDecimal(55))
-                .brand(Brand.MERCEDES)
-                .isElectric(true)
-                .build();
-
-        CreateCarDto testCar2 = CreateCarDto.builder()
-                .model("C300")
-                .regNumber("")
-                .pricePerDay(new BigDecimal(55))
-                .brand(Brand.MERCEDES)
-                .isElectric(true)
-                .build();
-
-        CreateCarDto testCar3 = CreateCarDto.builder()
-                .model("C300")
-                .regNumber("A15DFT")
-                .pricePerDay(new BigDecimal(-55))
-                .brand(Brand.MERCEDES)
-                .isElectric(true)
-                .build();
-
-        CreateCarDto testCar4 = CreateCarDto.builder()
-                .model("C300")
-                .regNumber("A15DFT")
-                .pricePerDay(new BigDecimal(0))
-                .brand(Brand.MERCEDES)
-                .isElectric(true)
-                .build();
-
-        // When & Then
-        IllegalArgumentException registrationNumberCannotBeNull = Assertions.assertThrows(IllegalArgumentException.class, () -> carService.createCar(testCar), "Registration number cannot be null");
-        assertEquals("Registration number cannot be empty", registrationNumberCannotBeNull.getMessage());
-
-        IllegalArgumentException registrationNumberCannotBeEmpty = Assertions.assertThrows(IllegalArgumentException.class, () -> carService.createCar(testCar2), "Registration number cannot be empty");
-        assertEquals("Registration number cannot be empty", registrationNumberCannotBeEmpty.getMessage());
-
-        IllegalArgumentException pricePerDayCannotBeNegative = Assertions.assertThrows(IllegalArgumentException.class, () -> carService.createCar(testCar3), "Price per day cannot be negative");
-        assertEquals("Price must be positive", pricePerDayCannotBeNegative.getMessage());
-
-        IllegalArgumentException pricePerDayCannotBeZero = Assertions.assertThrows(IllegalArgumentException.class, () -> carService.createCar(testCar4), "Price per day cannot be zero");
-        assertEquals("Price must be positive", pricePerDayCannotBeZero.getMessage());
     }
 
     @Test
@@ -180,7 +104,7 @@ class CarServiceTest {
         // Given
         Car car = new Car("C300", "A15DFT", new BigDecimal("55.32"), Brand.MERCEDES, true);
 
-        when(carRepository.getCarById("1")).thenReturn(car);
+        when(carRepository.findById("1")).thenReturn(car);
 
         // When
         Car result = carService.getCarById("1");
@@ -188,7 +112,7 @@ class CarServiceTest {
         // Then
         Assertions.assertEquals(car, result, "Expected car not found");
 
-        verify(carRepository, times(1)).getCarById("1");
+        verify(carRepository, times(1)).findById("1");
     }
 
 }

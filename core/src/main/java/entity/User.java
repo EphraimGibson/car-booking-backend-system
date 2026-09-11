@@ -1,15 +1,13 @@
 package entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import utils.StringUtility;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class User {
     private String id;
     private String name;
@@ -26,6 +24,12 @@ public class User {
             throw new IllegalArgumentException("User must have a name, please fill name field");
         }
         this.name = pName;
+    }
+
+    @Override
+    public String toString() {
+
+        return this.getName() + " with id: " + this.id;
     }
 
 }

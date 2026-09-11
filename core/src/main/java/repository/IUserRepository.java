@@ -10,5 +10,5 @@ public interface IUserRepository {
 
     List<User> getAllUsers();
 
-    User getUserById(String id);
+    User findById(String id);
 }

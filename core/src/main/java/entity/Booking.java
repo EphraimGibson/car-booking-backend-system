@@ -17,25 +17,44 @@ public class Booking {
     private Car car;
     private LocalDate startDate;
     private LocalDate endDate;
-
-    private BigDecimal totalPrice;
-
     private BookingStatus status;
+    private BigDecimal totalPrice;
 
     private LocalDate createdOn;
 
-    public Booking(User pUser, Car pCar, LocalDate pStartDate, LocalDate pEndDate, BigDecimal pTotalPrice, BookingStatus pStatus) {
-        validateInput(pUser, pCar, pStartDate, pEndDate, pTotalPrice);
+    public Booking(User pUser, Car pCar, LocalDate pStartDate, LocalDate pEndDate, BookingStatus pStatus) {
+
+        validateInput(pUser, pCar, pStartDate, pEndDate);
 
         this.car = pCar;
         this.startDate = pStartDate;
         this.endDate = pEndDate;
-        this.totalPrice = pTotalPrice;
         this.status = pStatus;
         this.createdOn = LocalDate.now();
+
+        BigDecimal calculatedTotalPrice = this.calculateTotalPrice();
+        validateTotalPrice(calculatedTotalPrice);
+
+        this.totalPrice = calculatedTotalPrice;
     }
 
-    private void validateInput(User pUser, Car pCar, LocalDate pStartDate, LocalDate pEndDate, BigDecimal pTotalPrice) {
+    public Booking(User pUser, Car pCar, LocalDate pStartDate, LocalDate pEndDate) {
+
+        validateInput(pUser, pCar, pStartDate, pEndDate);
+
+        this.car = pCar;
+        this.startDate = pStartDate;
+        this.endDate = pEndDate;
+        this.createdOn = LocalDate.now();
+
+
+        BigDecimal calculatedTotalPrice = this.calculateTotalPrice();
+        validateTotalPrice(calculatedTotalPrice);
+
+        this.totalPrice = calculatedTotalPrice;
+    }
+
+    private void validateInput(User pUser, Car pCar, LocalDate pStartDate, LocalDate pEndDate) {
         if (pUser == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -55,10 +74,6 @@ public class Booking {
         }
         if (!pCar.isAvailable()) {
             throw new IllegalArgumentException("Car is not available to be booked");
-        }
-
-        if (pTotalPrice == null || pTotalPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price must be positive");
         }
     }
 
@@ -84,6 +99,7 @@ public class Booking {
         if (pStartDate == null) {
             throw new IllegalArgumentException("Start date cannot be null");
         }
+
         this.startDate = pStartDate;
     }
 
@@ -94,12 +110,29 @@ public class Booking {
         this.endDate = pEndDate;
     }
 
-    public void setTotalPrice(BigDecimal pTotalPrice) {
+    private void setTotalPrice(BigDecimal pTotalPrice) {
         if (pTotalPrice == null || pTotalPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price must be positive");
+            throw new IllegalArgumentException("Total price of booking must be positive");
         }
         this.totalPrice = pTotalPrice;
     }
 
+    private int getNumberOfDays() {
+        if (startDate != null && endDate != null) {
+            return startDate.until(endDate).getDays();
+        }
+        return 0;
+    }
+
+    private BigDecimal calculateTotalPrice() {
+        return this.car != null ?
+                this.car.getPricePerDay().multiply(new BigDecimal(getNumberOfDays())) : null;
+    }
+
+    private void validateTotalPrice(BigDecimal pTotalPrice) {
+        if (pTotalPrice == null || pTotalPrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Total price of booking must be positive");
+        }
+    }
 
 }

@@ -16,9 +16,7 @@ import java.util.List;
 public class UserService {
     private IUserRepository userRepository;
 
-    public User createUser(String name) {
-
-        User user = new User(name);
+    public User createUser(User user) {
         return userRepository.saveUser(user);
     }
 
@@ -27,7 +25,7 @@ public class UserService {
     }
 
     public User getUserById(String userId) {
-        return userRepository.getUserById(userId);
+        return userRepository.findById(userId);
     }
 
 }

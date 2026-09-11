@@ -1,10 +1,6 @@
 package service;
 
-import dtos.CreateBookingDto;
-import entity.Booking;
-import entity.Brand;
-import entity.Car;
-import entity.User;
+import entity.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import repository.IBookingRepository;
+import repository.ICarRepository;
+import repository.IUserRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,6 +24,12 @@ class BookingServiceTest {
     @Mock
     IBookingRepository bookingRepository;
 
+    @Mock
+    IUserRepository userRepository;
+
+    @Mock
+    ICarRepository carRepository;
+
     @InjectMocks
     BookingService bookingService;
 
@@ -33,144 +37,62 @@ class BookingServiceTest {
     void testMakeBookingSuccessful() {
         // Given
         User testUser = new User("John");
+        testUser.setId("1");
+
         Car testCar = new Car("Benz", "A183jdn", BigDecimal.valueOf(59.23), Brand.MERCEDES, false);
-        CreateBookingDto createBookingDto = CreateBookingDto.builder()
-                .user(testUser)
-                .car(testCar)
-                .startDate(LocalDate.of(2026, 1, 8))
-                .endDate(LocalDate.of(2026, 1, 15))
-                .build();
+        testCar.setId("2");
 
-        Booking booking = new Booking();
+        Booking booking = new Booking(testUser, testCar, LocalDate.of(2026, 1, 8), LocalDate.of(2026, 1, 15));
 
+        when(userRepository.findById(any())).thenReturn(testUser);
+        when(carRepository.findById(any())).thenReturn(testCar);
         when(bookingRepository.createBooking(any())).thenReturn(booking);
 
         // When
-        Booking result = bookingService.makeBooking(createBookingDto);
+        Booking result = bookingService.makeBooking(booking);
 
         // Then
-        verify(bookingRepository, times(1)).createBooking(any());
         Assertions.assertEquals(booking, result);
+        Assertions.assertNotNull(booking.getStatus());
+        Assertions.assertEquals(BookingStatus.ACTIVE, result.getStatus());
+
+
+        verify(bookingRepository, times(1)).createBooking(booking);
+        verify(userRepository, times(1)).findById(testUser.getId());
+        verify(carRepository, times(1)).findById(testCar.getId());
     }
 
     @Test
-    void testMakeBookingWithInvalidStartDateUnsuccessful() {
+    void testMakeBookingUserWithoutIdThrowsError() {
         //Given
-        User user = new User("John");
-        Car car = new Car("Benz", "A183jdn", BigDecimal.valueOf(59.23), Brand.MERCEDES, false);
+        User testUser = new User("John");
 
-        final CreateBookingDto createBookingDto = CreateBookingDto.builder()
-                .user(user)
-                .car(car)
-                .startDate(null)
-                .endDate(LocalDate.of(2026, 1, 15))
-                .build();
+        Car testCar = new Car("Benz", "A183jdn", BigDecimal.valueOf(59.23), Brand.MERCEDES, false);
+
+        Booking booking = new Booking(testUser, testCar, LocalDate.of(2026, 1, 8), LocalDate.of(2026, 1, 15));
 
         //When and then
-        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.makeBooking(createBookingDto));
-        Assertions.assertEquals("Start date cannot be null", exception.getMessage());
+        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.makeBooking(booking));
+        Assertions.assertEquals("Invalid user for booking, user has no ID", exception.getMessage());
     }
 
     @Test
-    void testMakeBookingWithInvalidEndDateUnsuccessful() {
+    void testMakeBookingCarWithoutIdThrowsError() {
         //Given
-        User user = new User("John");
-        Car car = new Car("Benz", "A183jdn", BigDecimal.valueOf(59.23), Brand.MERCEDES, false);
+        User testUser = new User("John");
+        testUser.setId("1");
 
+        Car testCar = new Car("Benz", "A183jdn", BigDecimal.valueOf(59.23), Brand.MERCEDES, false);
 
-        final CreateBookingDto createBookingDto = CreateBookingDto.builder()
-                .user(user)
-                .car(car)
-                .startDate(LocalDate.of(2026, 1, 8))
-                .endDate(null)
-                .build();
+        when(userRepository.findById(any())).thenReturn(testUser);
 
-        //When
-        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.makeBooking(createBookingDto));
-        Assertions.assertEquals("End date cannot be null", exception.getMessage());
-    }
-
-
-    @Test
-    void testMakeBookingWithInvalidUserThrowsError() {
-        //Given
-        User user = null;
-        Car car = new Car("Benz", "A183jdn", BigDecimal.valueOf(59.23), Brand.MERCEDES, false);
-
-        final CreateBookingDto createBookingDto = CreateBookingDto.builder()
-                .user(user)
-                .car(car)
-                .startDate(LocalDate.of(2026, 1, 8))
-                .endDate(LocalDate.of(2026, 1, 15))
-                .build();
+        Booking booking = new Booking(testUser, testCar, LocalDate.of(2026, 1, 8), LocalDate.of(2026, 1, 15));
 
         //When and then
-        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.makeBooking(createBookingDto));
-        Assertions.assertEquals("User cannot be null", exception.getMessage());
-    }
+        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.makeBooking(booking));
+        Assertions.assertEquals("Invalid car for booking, car has no ID", exception.getMessage());
 
-    @Test
-    void testMakeBookingWithInvalidCarThrowsError() {
-        //Given
-        User user = new User("John");
-        Car car = null;
-        Car car2 = new Car("Benz", "A183jdn", BigDecimal.valueOf(59.23), Brand.MERCEDES, false);
-
-        final CreateBookingDto createBookingDto = CreateBookingDto.builder()
-                .user(user)
-                .car(car)
-                .startDate(LocalDate.of(2026, 1, 8))
-                .endDate(LocalDate.of(2026, 1, 15))
-                .build();
-
-        car2.setAvailable(false);
-
-        final CreateBookingDto createBookingDto2 = CreateBookingDto.builder()
-                .user(user)
-                .car(car2)
-                .startDate(LocalDate.of(2026, 1, 8))
-                .endDate(LocalDate.of(2026, 1, 15))
-                .build();
-
-        //When and Then
-        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.makeBooking(createBookingDto));
-        Assertions.assertEquals("Car cannot be null", exception.getMessage());
-
-        exception = Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.makeBooking(createBookingDto2));
-        Assertions.assertEquals("Car is not available to be booked", exception.getMessage());
-    }
-
-
-    @Test
-    void testMakeBookingWithNullTotalPriceThrowsError() {
-        assertInvalidPriceForBooking(null);
-    }
-
-    @Test
-    void testMakeBookingWithTotalPriceZeroThrowsError() {
-        assertInvalidPriceForBooking(BigDecimal.ZERO);
-    }
-
-    @Test
-    void testMakeBookingWithNegativeTotalPriceThrowsError() {
-        assertInvalidPriceForBooking(BigDecimal.valueOf(-1));
-    }
-
-    private void assertInvalidPriceForBooking(BigDecimal price) {
-        //Given
-        User user = new User("John");
-        Car car = new Car("Benz", "A183jdn", BigDecimal.valueOf(59.23), Brand.MERCEDES, false);
-
-        CreateBookingDto dtoMock = mock(CreateBookingDto.class);
-
-        when(dtoMock.getUser()).thenReturn(user);
-        when(dtoMock.getCar()).thenReturn(car);
-        when(dtoMock.getStartDate()).thenReturn(LocalDate.of(2026, 1, 8));
-        when(dtoMock.getEndDate()).thenReturn(LocalDate.of(2026, 1, 15));
-        when(dtoMock.getTotalPrice()).thenReturn(price);
-
-        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> bookingService.makeBooking(dtoMock));
-        Assertions.assertEquals("Price must be positive", exception.getMessage());
+        verify(userRepository, times(1)).findById(testUser.getId());
     }
 
 

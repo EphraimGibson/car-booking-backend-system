@@ -1,14 +1,18 @@
-package memory;
+package memoryPersistence;
 
 import entity.Booking;
 import entity.User;
 import repository.IBookingRepository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class BookingRepositoryMem implements IBookingRepository {
 
     Map<String, Booking> bookings = new HashMap<>();
+
     @Override
     public Booking createBooking(Booking booking) {
         String id = UUID.randomUUID().toString();
@@ -30,6 +34,11 @@ public class BookingRepositoryMem implements IBookingRepository {
 
     @Override
     public List<Booking> getAllBookings() {
-        return List.of();
+        return List.of(bookings.values().toArray(new Booking[0]));
+    }
+
+    @Override
+    public Booking findById(String id) {
+        return bookings.get(id);
     }
 }

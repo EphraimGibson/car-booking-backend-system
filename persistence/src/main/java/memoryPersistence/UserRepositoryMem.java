@@ -1,9 +1,12 @@
-package memory;
+package memoryPersistence;
 
 import entity.User;
 import repository.IUserRepository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class UserRepositoryMem implements IUserRepository {
 
@@ -20,14 +23,12 @@ public class UserRepositoryMem implements IUserRepository {
 
     @Override
     public List<User> getAllUsers() {
-        return List.of();
+        return List.of(allUsers.values().toArray(new User[0]));
     }
 
     @Override
-    public User getUserById(String id) {
+    public User findById(String id) {
         return allUsers.get(id);
-        //TODO rules say not to return null, maybe throw exception
-
 
     }
 }

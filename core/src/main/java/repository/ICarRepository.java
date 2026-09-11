@@ -14,5 +14,5 @@ public interface ICarRepository {
 
     List<Car> allElectricCars();
 
-    Car getCarById(String id);
+    Car findById(String id);
 }

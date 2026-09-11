@@ -1,9 +1,12 @@
-package memory;
+package memoryPersistence;
 
 import entity.Car;
 import repository.ICarRepository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class CarRepositoryMem implements ICarRepository {
 
@@ -14,13 +17,13 @@ public class CarRepositoryMem implements ICarRepository {
         String id = UUID.randomUUID().toString();
         car.setId(id);
         allCars.put(id, car);
-        
+
         return car;
     }
 
     @Override
     public List<Car> getAllCars() {
-        return List.of();
+        return List.of(allCars.values().toArray(new Car[0]));
     }
 
     @Override
@@ -34,9 +37,7 @@ public class CarRepositoryMem implements ICarRepository {
     }
 
     @Override
-    public Car getCarById(String id) {
-        //TODO don't return null, maybe throw exception
-
-        return null;
+    public Car findById(String id) {
+        return allCars.get(id);
     }
 }
