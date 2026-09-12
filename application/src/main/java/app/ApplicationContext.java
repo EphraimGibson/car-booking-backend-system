@@ -3,10 +3,10 @@ package app;
 import entity.Brand;
 import entity.Car;
 import entity.User;
+import filePersistence.UserRepositoryFile;
 import lombok.Getter;
 import memoryPersistence.BookingRepositoryMem;
 import memoryPersistence.CarRepositoryMem;
-import memoryPersistence.UserRepositoryMem;
 import repository.IBookingRepository;
 import repository.ICarRepository;
 import repository.IUserRepository;
@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 public class ApplicationContext {
 
     private final IBookingRepository bookingRepository = new BookingRepositoryMem();
-    private final IUserRepository userRepository = new UserRepositoryMem();
+    private final IUserRepository userRepository = new UserRepositoryFile();
     private final ICarRepository carRepository = new CarRepositoryMem();
 
 
